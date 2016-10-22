@@ -18,6 +18,16 @@ spec = do
       `shouldSatisfy` \case
         Right (Type 1) -> True
         _ -> False
+    it "infers the type of nilary applications" $ do
+      runCheck (typeOf (App (Var "x") [])) (Map.singleton "x" (Pi [] (Type 1)))
+      `shouldSatisfy` \case
+        Right (Type 1) -> True
+        _ -> False
+    it "infers the types of unary applications" $ do
+      runCheck (typeOf (App (Var "x") [Type 2])) (Map.singleton "x" (Pi [("a", Type 3)] (Var "a")))
+      `shouldSatisfy` \case
+        Right (Type 2) -> True
+        _ -> False
     it "infers the types of nilary abstractions" $ do
       runCheck (typeOf (Abs [] (Var "x"))) (Map.singleton "x" (Type 1))
       `shouldSatisfy` \case

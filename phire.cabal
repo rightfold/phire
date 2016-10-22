@@ -27,6 +27,7 @@ test-suite phirec-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   other-modules:       Language.Phire.CheckSpec
+                     , Language.Phire.SyntaxSpec
   ghc-options:         -Wall -threaded
   build-depends:       base >= 4.7 && < 5
                      , containers >= 0.5 && < 1
