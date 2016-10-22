@@ -38,6 +38,26 @@ spec = do
       `shouldSatisfy` \case
         Right (Pi [("x", Type 1), ("y", Var "x")] (Var "x")) -> True
         _ -> False
+    it "infers the types of nilary pi terms" $ do
+      runCheck (typeOf (Pi [] (Type 1))) Map.empty
+      `shouldSatisfy` \case
+        Right (Type 2) -> True
+        _ -> False
+    it "infers the types of unary pi terms" $ do
+      runCheck (typeOf (Pi [("x", Type 2)] (Type 1))) Map.empty
+      `shouldSatisfy` \case
+        Right (Type 3) -> True
+        _ -> False
+    it "infers the types of non-dependent binary pi terms" $ do
+      runCheck (typeOf (Pi [("x", Type 1), ("y", Type 2)] (Var "x"))) Map.empty
+      `shouldSatisfy` \case
+        Right (Type 3) -> True
+        _ -> False
+    it "infers the types of dependent binary pi terms" $ do
+      runCheck (typeOf (Pi [("x", Type 1), ("y", Var "x")] (Var "y"))) Map.empty
+      `shouldSatisfy` \case
+        Right (Type 2) -> True
+        _ -> False
     it "infers the types of types" $ do
       runCheck (typeOf (Type 1)) Map.empty
       `shouldSatisfy` \case
