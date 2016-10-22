@@ -68,8 +68,13 @@ spec = do
       `shouldSatisfy` \case
         Right (Type 2) -> True
         _ -> False
-    it "infers the types of types" $ do
+    it "infers the types of type terms" $ do
       runCheck (typeOf (Type 1)) Map.empty
+      `shouldSatisfy` \case
+        Right (Type 2) -> True
+        _ -> False
+    it "infers the types of let terms" $ do
+      runCheck (typeOf (Let "x" (Type 1) (Var "x"))) Map.empty
       `shouldSatisfy` \case
         Right (Type 2) -> True
         _ -> False

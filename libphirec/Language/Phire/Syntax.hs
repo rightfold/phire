@@ -25,6 +25,9 @@ data Term
 
   -- | A type term, such as @type 1@.
   | Type Int
+
+  -- | A let term, such as @let x = y in x@.
+  | Let Text Term Term
   deriving (Eq, Ord, Show)
 
 -- | Perform substitutions in a term.
@@ -52,4 +55,9 @@ substitute substs (Pi parameters resultType) =
       ( Map.delete name substs'
       , parameters' ++ [(name, substitute substs' type_)]
       )
-substitute _ (Type universe) = Type universe
+substitute _ (Type universe) =
+  Type universe
+substitute substs (Let name value body) =
+  Let name
+      (substitute substs value)
+      (substitute (Map.delete name substs) body)

@@ -76,6 +76,9 @@ typeOf (Pi parameters resultType) = do
       typeType <- Reader.local (const env) $ typeOf type_
       typeUniverse <- Reader.local (const env) $ termUniverse typeType
       pure $ (Map.insert name type_ env, max acc typeUniverse)
+typeOf (Let name value body) = do
+  valueType <- typeOf value
+  Reader.local (Map.insert name valueType) $ typeOf body
 typeOf (Type universe) = pure $ Type (universe + 1)
 
 -- | Compute if one type subsumes another.
