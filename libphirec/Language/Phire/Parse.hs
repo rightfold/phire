@@ -4,7 +4,7 @@ module Language.Phire.Parse
   ) where
 
 import Control.Applicative ((<|>))
-import Control.Monad (void, when)
+import Control.Monad (guard, void)
 import Data.Text (Text)
 import Language.Phire.Syntax (Term(..))
 import Text.Parsec.Text (Parser)
@@ -19,13 +19,12 @@ term :: Parser Term
 term = level0
   where
     level0 =     P.try (Var <$> identifier)
-             <|> (Type <$> (kType *> integer))
+             <|> (Type <$> (kType *> pLParen *> integer <* pRParen))
 
 identifier :: Parser Text
 identifier = flip P.label "identifier" . lexeme $ do
   name <- fmap Text.pack $ (:) <$> ihead <*> P.many itail
-  when (name `elem` ["type"]) $
-    fail ""
+  guard (name `notElem` ["type"])
   pure name
   where
     ihead = P.oneOf $ ['a'..'z'] ++ ['A'..'Z'] ++ "_"
@@ -37,6 +36,12 @@ integer = flip P.label "integer" . lexeme $
 
 kType :: Parser ()
 kType = void . lexeme $ P.string "type"
+
+pLParen :: Parser ()
+pLParen = void . lexeme $ P.string "("
+
+pRParen :: Parser ()
+pRParen = void . lexeme $ P.string ")"
 
 lexeme :: Parser a -> Parser a
 lexeme p = P.many space *> p <* P.many space

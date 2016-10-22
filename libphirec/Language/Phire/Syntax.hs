@@ -1,13 +1,17 @@
+{-# LANGUAGE OverloadedStrings #-}
 -- | Phire abstract syntax tree.
 module Language.Phire.Syntax
   ( Term(..)
   , substitute
+  , pretty
   ) where
 
 import Data.Map (Map)
+import Data.Monoid ((<>))
 import Data.Text (Text)
 
 import qualified Data.Map as Map
+import qualified Data.Text as Text
 
 -- | A term in the Phire language.
 data Term
@@ -23,7 +27,7 @@ data Term
   -- | A pi term, such as @pi(x: t) => u(x)@.
   | Pi ([] (Text, Term)) Term
 
-  -- | A type term, such as @type 1@.
+  -- | A type term, such as @type(1)@.
   | Type Int
 
   -- | A let term, such as @let x = y; x@.
@@ -61,3 +65,23 @@ substitute substs (Let name value body) =
   Let name
       (substitute substs value)
       (substitute (Map.delete name substs) body)
+
+-- | Format a term.
+pretty :: Term -> Text
+pretty (Var name) = name
+pretty (App callee arguments) =
+  callee' <> "(" <> Text.intercalate ", " (map pretty arguments) <> ")"
+  where
+    callee' = case callee of
+      (Var _)   -> pretty callee
+      (App _ _) -> pretty callee
+      (Type _)  -> pretty callee
+      _ -> "(" <> pretty callee <> ")"
+pretty (Abs parameters body) =
+  "fun(" <> Text.intercalate ", " (map parameter' parameters) <> ") => " <> pretty body
+  where parameter' (name, type_) = name <> ": " <> pretty type_
+pretty (Pi parameters resultType) =
+  "pi(" <> Text.intercalate ", " (map parameter' parameters) <> ") => " <> pretty resultType
+  where parameter' (name, type_) = name <> ": " <> pretty type_
+pretty (Type universe) = "type(" <> Text.pack (show universe) <> ")"
+pretty (Let name value body) = "let " <> name <> " = " <> pretty value <> ";\n" <> pretty body

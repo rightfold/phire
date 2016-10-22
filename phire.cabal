@@ -6,6 +6,7 @@ cabal-version:         >=1.10
 library
   hs-source-dirs:      libphirec
   exposed-modules:     Language.Phire.Check
+                     , Language.Phire.Codegen.PHP
                      , Language.Phire.Parse
                      , Language.Phire.Syntax
   ghc-options:         -Wall
