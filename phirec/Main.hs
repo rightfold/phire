@@ -27,5 +27,6 @@ main = do
           print err
   where
     prim = Map.fromList [ ("bool", Type 1)
+                        , ("true", Var "bool")
                         , ("not", Pi [("x", (Var "bool"))] (Var "bool"))
                         ]

@@ -11,5 +11,7 @@ import qualified Data.Text as Text
 
 codegen :: Term -> Text
 codegen (Var name) = "$" <> name
+codegen (App callee arguments) =
+  "(" <> codegen callee <> ")(" <> Text.intercalate ", " (map codegen arguments) <> ")"
 codegen (Type universe) = Text.pack (show universe)
 codegen _ = "(TODO)"

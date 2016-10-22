@@ -16,8 +16,9 @@ parse :: String -> Text -> Either P.ParseError Term
 parse = P.parse (term <* P.eof)
 
 term :: Parser Term
-term = level0
+term = level1
   where
+    level1 = foldl App <$> level0 <*> P.many (pLParen *> term `P.sepBy` pComma <* pRParen)
     level0 =     P.try (Var <$> identifier)
              <|> (Type <$> (kType *> pLParen *> integer <* pRParen))
 
@@ -36,6 +37,9 @@ integer = flip P.label "integer" . lexeme $
 
 kType :: Parser ()
 kType = void . lexeme $ P.string "type"
+
+pComma :: Parser ()
+pComma = void . lexeme $ P.string ","
 
 pLParen :: Parser ()
 pLParen = void . lexeme $ P.string "("
