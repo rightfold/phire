@@ -34,4 +34,5 @@ typeOf (Var name) = do
   case Map.lookup name env of
     Just term -> pure term
     Nothing -> throwError $ VariableIsNotInScope name
+typeOf (Type universe) = pure $ Type (universe + 1)
 typeOf _ = error "not yet implemented"

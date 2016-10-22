@@ -18,6 +18,11 @@ spec = do
       `shouldSatisfy` \case
         Right (Type 1) -> True
         _ -> False
+    it "infers the types of types" $ do
+      runCheck (typeOf (Type 1)) Map.empty
+      `shouldSatisfy` \case
+        Right (Type 2) -> True
+        _ -> False
     it "reports unknown variables" $ do
       runCheck (typeOf (Var "x")) Map.empty
       `shouldSatisfy` \case
