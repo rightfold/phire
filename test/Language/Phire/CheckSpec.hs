@@ -18,6 +18,26 @@ spec = do
       `shouldSatisfy` \case
         Right (Type 1) -> True
         _ -> False
+    it "infers the types of nilary abstractions" $ do
+      runCheck (typeOf (Abs [] (Var "x"))) (Map.singleton "x" (Type 1))
+      `shouldSatisfy` \case
+        Right (Pi [] (Type 1)) -> True
+        _ -> False
+    it "infers the types of unary abstractions" $ do
+      runCheck (typeOf (Abs [("x", Type 1)] (Var "x"))) Map.empty
+      `shouldSatisfy` \case
+        Right (Pi [("x", Type 1)] (Type 1)) -> True
+        _ -> False
+    it "infers the types of non-dependent binary abstractions" $ do
+      runCheck (typeOf (Abs [("x", Type 1), ("y", Type 2)] (Var "x"))) Map.empty
+      `shouldSatisfy` \case
+        Right (Pi [("x", Type 1), ("y", Type 2)] (Type 1)) -> True
+        _ -> False
+    it "infers the types of dependent binary abstractions" $ do
+      runCheck (typeOf (Abs [("x", Type 1), ("y", Var "x")] (Var "y"))) Map.empty
+      `shouldSatisfy` \case
+        Right (Pi [("x", Type 1), ("y", Var "x")] (Var "x")) -> True
+        _ -> False
     it "infers the types of types" $ do
       runCheck (typeOf (Type 1)) Map.empty
       `shouldSatisfy` \case
@@ -27,4 +47,9 @@ spec = do
       runCheck (typeOf (Var "x")) Map.empty
       `shouldSatisfy` \case
         Left (VariableIsNotInScope "x") -> True
+        _ -> False
+    it "reports type errors in abstraction parameter types" $ do
+      runCheck (typeOf (Abs [("x", Var "y")] (Var "x"))) Map.empty
+      `shouldSatisfy` \case
+        Left (VariableIsNotInScope "y") -> True
         _ -> False
