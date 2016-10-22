@@ -26,7 +26,7 @@ data Term
   -- | A type term, such as @type 1@.
   | Type Int
 
-  -- | A let term, such as @let x = y in x@.
+  -- | A let term, such as @let x = y; x@.
   | Let Text Term Term
   deriving (Eq, Ord, Show)
 

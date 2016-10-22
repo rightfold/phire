@@ -18,7 +18,7 @@ spec = do
       `shouldSatisfy` \case
         Right (Type 1) -> True
         _ -> False
-    it "infers the type of nilary applications" $ do
+    it "infers the types of nilary applications" $ do
       runCheck (typeOf (App (Var "x") [])) (Map.singleton "x" (Pi [] (Type 1)))
       `shouldSatisfy` \case
         Right (Type 1) -> True

@@ -6,11 +6,13 @@ cabal-version:         >=1.10
 library
   hs-source-dirs:      libphirec
   exposed-modules:     Language.Phire.Check
+                     , Language.Phire.Parse
                      , Language.Phire.Syntax
   ghc-options:         -Wall
   build-depends:       base >= 4.7 && < 5
                      , containers >= 0.5 && < 1
                      , mtl >= 2.2 && < 3
+                     , parsec >= 3.1 && < 4
                      , text >= 1.2 && < 2
   default-language:    Haskell2010
 
@@ -19,7 +21,9 @@ executable phirec
   main-is:             Main.hs
   ghc-options:         -Wall -threaded
   build-depends:       base >= 4.7 && < 5
+                     , containers >= 0.5 && < 1
                      , phire
+                     , text >= 1.2 && < 2
   default-language:    Haskell2010
 
 test-suite phirec-test
