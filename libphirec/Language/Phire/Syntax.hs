@@ -21,10 +21,10 @@ data Term
   -- | A application term, such as @f(x)@.
   | App Term ([] Term)
 
-  -- | A abstraction term, such as @fun(x: t) => x@.
+  -- | A abstraction term, such as @lam(x: t) x@.
   | Abs ([] (Text, Term)) Term
 
-  -- | A pi term, such as @pi(x: t) => u(x)@.
+  -- | A pi term, such as @pi(x: t) u(x)@.
   | Pi ([] (Text, Term)) Term
 
   -- | A type term, such as @type(1)@.
@@ -78,10 +78,10 @@ pretty (App callee arguments) =
       (Type _)  -> pretty callee
       _ -> "(" <> pretty callee <> ")"
 pretty (Abs parameters body) =
-  "fun(" <> Text.intercalate ", " (map parameter' parameters) <> ") => " <> pretty body
+  "lam(" <> Text.intercalate ", " (map parameter' parameters) <> ") " <> pretty body
   where parameter' (name, type_) = name <> ": " <> pretty type_
 pretty (Pi parameters resultType) =
-  "pi(" <> Text.intercalate ", " (map parameter' parameters) <> ") => " <> pretty resultType
+  "pi(" <> Text.intercalate ", " (map parameter' parameters) <> ") " <> pretty resultType
   where parameter' (name, type_) = name <> ": " <> pretty type_
 pretty (Type universe) = "type(" <> Text.pack (show universe) <> ")"
 pretty (Let name value body) = "let " <> name <> " = " <> pretty value <> ";\n" <> pretty body
